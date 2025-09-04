@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { signupUser } from "@/api/api"; 
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,6 +10,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Camera } from "lucide-react";
 
 const Signup = () => {
+  const navigate = useNavigate();
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     fullName: "",
@@ -33,12 +36,38 @@ const Signup = () => {
       [e.target.name]: e.target.value,
     });
   };
+ 
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Handle signup logic here
-    console.log("Signup data:", formData, selectedImage);
-  };
+  if (formData.password !== formData.confirmPassword) {
+    alert("Passwords do not match");
+    return;
+  }
+
+  const form = new FormData();
+  form.append("fullName", formData.fullName);
+  form.append("email", formData.email);
+  form.append("password", formData.password);
+  form.append("confirmPassword", formData.confirmPassword);
+
+  if (selectedImage) {
+    const response = await fetch(selectedImage);
+    const blob = await response.blob();
+    form.append("profileImage", blob, "profile.jpg");
+  }
+
+  try {
+    const result = await signupUser(form);
+    console.log("Signup successful:", result);
+
+    navigate("/login");
+  } catch (err) {
+    console.error("Signup failed:", err);
+    alert(err.message || "Signup failed. Please try again.");
+  }
+};
+
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
