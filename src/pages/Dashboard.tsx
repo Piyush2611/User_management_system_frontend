@@ -1,0 +1,229 @@
+import React from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { 
+  Users, 
+  ShoppingCart, 
+  DollarSign, 
+  TrendingUp,
+  Bell,
+  Search,
+  Settings,
+  LogOut,
+  Home,
+  BarChart3,
+  Package,
+  MessageSquare
+} from "lucide-react";
+import { Input } from "@/components/ui/input";
+
+const Dashboard = () => {
+  const stats = [
+    {
+      title: "Total Users",
+      value: "2,350",
+      change: "+12%",
+      icon: Users,
+      color: "text-blue-600"
+    },
+    {
+      title: "Total Orders",
+      value: "1,234",
+      change: "+8%",
+      icon: ShoppingCart,
+      color: "text-green-600"
+    },
+    {
+      title: "Revenue",
+      value: "$45,678",
+      change: "+23%",
+      icon: DollarSign,
+      color: "text-purple-600"
+    },
+    {
+      title: "Growth",
+      value: "89.2%",
+      change: "+5%",
+      icon: TrendingUp,
+      color: "text-orange-600"
+    }
+  ];
+
+  const sidebarItems = [
+    { icon: Home, label: "Dashboard", active: true },
+    { icon: BarChart3, label: "Analytics", active: false },
+    { icon: Package, label: "Products", active: false },
+    { icon: Users, label: "Customers", active: false },
+    { icon: MessageSquare, label: "Messages", active: false },
+    { icon: Settings, label: "Settings", active: false },
+  ];
+
+  return (
+    <div className="min-h-screen bg-background">
+      {/* Sidebar */}
+      <div className="fixed inset-y-0 left-0 w-64 bg-card border-r border-border">
+        <div className="flex flex-col h-full">
+          {/* Logo */}
+          <div className="p-6 border-b border-border">
+            <h1 className="text-xl font-bold text-primary">Dashboard</h1>
+          </div>
+
+          {/* Navigation */}
+          <nav className="flex-1 p-4 space-y-2">
+            {sidebarItems.map((item) => (
+              <Button
+                key={item.label}
+                variant={item.active ? "default" : "ghost"}
+                className={`w-full justify-start ${
+                  item.active ? "bg-primary text-primary-foreground" : ""
+                }`}
+              >
+                <item.icon className="h-4 w-4 mr-3" />
+                {item.label}
+              </Button>
+            ))}
+          </nav>
+
+          {/* User Profile */}
+          <div className="p-4 border-t border-border">
+            <div className="flex items-center space-x-3 mb-3">
+              <Avatar className="h-8 w-8">
+                <AvatarImage src="" />
+                <AvatarFallback>JD</AvatarFallback>
+              </Avatar>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium truncate">John Doe</p>
+                <p className="text-xs text-muted-foreground">john@example.com</p>
+              </div>
+            </div>
+            <Button variant="ghost" size="sm" className="w-full justify-start text-red-500 hover:text-red-600 hover:bg-red-50">
+              <LogOut className="h-4 w-4 mr-2" />
+              Logout
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="ml-64">
+        {/* Header */}
+        <header className="bg-card border-b border-border p-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <h2 className="text-2xl font-semibold">Dashboard</h2>
+            </div>
+            <div className="flex items-center space-x-4">
+              {/* Search */}
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Search..."
+                  className="pl-10 w-80"
+                />
+              </div>
+              
+              {/* Notifications */}
+              <Button variant="outline" size="icon">
+                <Bell className="h-4 w-4" />
+              </Button>
+
+              {/* Profile */}
+              <Avatar className="h-8 w-8">
+                <AvatarImage src="" />
+                <AvatarFallback>JD</AvatarFallback>
+              </Avatar>
+            </div>
+          </div>
+        </header>
+
+        {/* Dashboard Content */}
+        <main className="p-6">
+          {/* Welcome Section */}
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold mb-2">Welcome back, John!</h1>
+            <p className="text-muted-foreground">
+              Here's what's happening with your business today.
+            </p>
+          </div>
+
+          {/* Stats Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            {stats.map((stat, index) => (
+              <Card key={index}>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">
+                    {stat.title}
+                  </CardTitle>
+                  <stat.icon className={`h-4 w-4 ${stat.color}`} />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{stat.value}</div>
+                  <p className="text-xs text-muted-foreground">
+                    <span className="text-green-500">{stat.change}</span> from last month
+                  </p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          {/* Additional Content */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Recent Activity</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-2 h-2 bg-primary rounded-full"></div>
+                    <p className="text-sm">New user registered</p>
+                    <span className="text-xs text-muted-foreground ml-auto">2m ago</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                    <p className="text-sm">Order #1234 completed</p>
+                    <span className="text-xs text-muted-foreground ml-auto">5m ago</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                    <p className="text-sm">Payment received</p>
+                    <span className="text-xs text-muted-foreground ml-auto">10m ago</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Quick Actions</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 gap-3">
+                  <Button variant="outline" className="h-20 flex-col">
+                    <Users className="h-5 w-5 mb-2" />
+                    <span className="text-sm">Add User</span>
+                  </Button>
+                  <Button variant="outline" className="h-20 flex-col">
+                    <Package className="h-5 w-5 mb-2" />
+                    <span className="text-sm">New Product</span>
+                  </Button>
+                  <Button variant="outline" className="h-20 flex-col">
+                    <BarChart3 className="h-5 w-5 mb-2" />
+                    <span className="text-sm">View Reports</span>
+                  </Button>
+                  <Button variant="outline" className="h-20 flex-col">
+                    <Settings className="h-5 w-5 mb-2" />
+                    <span className="text-sm">Settings</span>
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </main>
+      </div>
+    </div>
+  );
+};
+
+export default Dashboard;
