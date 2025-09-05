@@ -60,3 +60,13 @@ export const deleteUser = async (userId) => {
   }
 };
 
+// Get User Profile API
+export const getUserProfile = async () => {
+  try {
+    const response = await api.get("/getProfiledetails");
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || { message: "Failed to fetch user profile" };
+  }
+};
+

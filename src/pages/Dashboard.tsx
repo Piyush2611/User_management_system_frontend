@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { getAllSections } from "@/api/api";
+import { getAllSections, getUserProfile } from "@/api/api";
 import { UserTable } from './user_list';
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -67,6 +67,7 @@ const Dashboard = () => {
   ];
 
   const [activeSection, setActiveSection] = useState("Dashboard");
+  const [user, setUser] = useState({ full_name: "", email: "" });
 
   const [sidebarItems, setSidebarItems] = useState([
     { icon: Home, label: "Dashboard", active: true },
@@ -102,6 +103,26 @@ const Dashboard = () => {
 
     fetchSections();
   }, []);
+
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        const response = await getUserProfile();
+        if (response.code === 200 && Array.isArray(response.data) && response.data.length > 0) {
+          const firstUser = response.data[0];
+          setUser({
+            full_name: firstUser.full_name || "Unknown User",
+            email: firstUser.email || "No email",
+          });
+        }
+      } catch (err) {
+        console.error("Error fetching user profile:", err);
+      }
+    };
+
+    fetchUserProfile();
+  }, []);
+
 
   const handleSidebarClick = (clickedLabel) => {
     setActiveSection(clickedLabel);
@@ -150,12 +171,22 @@ const Dashboard = () => {
             <div className="flex items-center space-x-3 mb-3">
               <Avatar className="h-8 w-8">
                 <AvatarImage src="" />
-                <AvatarFallback>JD</AvatarFallback>
+                {/* <AvatarFallback>{user.full_name ? user.full_name.split(" ").map(n => n[0]).join("") : "JD"}</AvatarFallback> */}
+                <AvatarFallback>
+                  {user.full_name
+                    ? user.full_name
+                      .split(" ")
+                      .map((n) => n[0])
+                      .join("")
+                      .toUpperCase() // Optional: uppercase initials
+                    : "JD"}
+                </AvatarFallback>
               </Avatar>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium truncate">John Doe</p>
-                <p className="text-xs text-muted-foreground">john@example.com</p>
+                <p className="text-sm font-medium truncate">{user.full_name || "John Doe"}</p>
+                <p className="text-xs text-muted-foreground">{user.email || "john@example.com"}</p>
               </div>
+
             </div>
             <Button variant="ghost" size="sm" className="w-full justify-start text-red-500 hover:text-red-600 hover:bg-red-50"
               onClick={handleLogout}
