@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { loginUser } from "@/api/api";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -22,12 +23,25 @@ const Login = () => {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle login logic here
-    console.log("Login data:", formData);
-    // Navigate to dashboard on successful login
-    navigate("/dashboard");
+
+    try {
+      const response = await loginUser({
+        email: formData.email,
+        password: formData.password,
+      });
+
+      console.log("Login Success:", response);
+      // optionally save token to localStorage/session
+      localStorage.setItem("token", response.token);
+      localStorage.setItem("user_id",response.user_id);
+      localStorage.setItem("role_id",response.role_id);
+      navigate("/dashboard"); // redirect on success
+    } catch (error) {
+      console.error("Login Error:", error.message);
+      alert(error.message || "Login failed");
+    }
   };
 
   return (

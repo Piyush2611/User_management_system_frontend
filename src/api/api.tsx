@@ -3,8 +3,8 @@ import axios from "axios";
 
 // Set up a base Axios instance (optional but useful)
 const api = axios.create({
-  baseURL: "http://localhost:5000", // ✅ replace with your actual backend URL
-  withCredentials: true, // if you're using cookies or sessions
+  baseURL: "http://localhost:5000",
+  withCredentials: true,
 });
 
 // Signup API
@@ -20,3 +20,34 @@ export const signupUser = async (formData) => {
     throw error.response?.data || { message: "Something went wrong" };
   }
 };
+export const loginUser = async (formData) => {
+  try {
+    const response = await api.post("/login", formData,{
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }); // No need to manually set Content-Type
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || { message: "Something went wrong" };
+  }
+};
+
+export const getAllSections = async () => {
+  try {
+    const response = await api.get("/getallsections");
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || { message: "Failed to fetch sections" };
+  }
+};
+
+export const getUsers = async (roleId, userId) => {
+  try {
+    const response = await api.get(`/getusers?role_id=${roleId}&user_id=${userId}`);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || { message: "Failed to fetch users" };
+  }
+};
+
