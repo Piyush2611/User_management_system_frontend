@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
-import { getUsers } from "@/api/api";
+import { getUsers,deleteUser  } from "@/api/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -68,9 +68,9 @@ export function UserTable() {
 
     const fetchUsers = async () => {
         try {
-            const response  = await getUsers(roleId, userId);
-            console.log("API response:", response); 
-             const fetchedUsers = response.data;
+            const response = await getUsers(roleId, userId);
+            console.log("API response:", response);
+            const fetchedUsers = response.data;
 
             // Format fetched data
             const formatted = fetchedUsers.map((user: RawUser) => ({
@@ -96,6 +96,18 @@ export function UserTable() {
         fetchUsers();
     }, [roleId, userId]);
 
+     const handleDeleteUser = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this user?")) return;
+
+    try {
+      await deleteUser(id);
+      // Refresh user list after deletion
+      fetchUsers();
+    } catch (error) {
+      console.error("Failed to delete user:", error);
+      alert(error.message || "Failed to delete user");
+    }
+  };
 
     const roles = useMemo(() => {
         const roleList = Array.from(new Set(users.map(u => u.role)));
@@ -296,15 +308,18 @@ export function UserTable() {
                                                 </Button>
                                             </DropdownMenuTrigger>
                                             <DropdownMenuContent align="end">
-                                                <DropdownMenuItem>
+                                                {/* <DropdownMenuItem>
                                                     <Eye className="h-4 w-4 mr-2" />
                                                     View Details
                                                 </DropdownMenuItem>
                                                 <DropdownMenuItem>
                                                     <Edit className="h-4 w-4 mr-2" />
                                                     Edit User
-                                                </DropdownMenuItem>
-                                                <DropdownMenuItem className="text-destructive">
+                                                </DropdownMenuItem> */}
+                                                <DropdownMenuItem
+                                                    className="text-destructive"
+                                                    onClick={() => handleDeleteUser(user.id)}
+                                                >
                                                     <Trash2 className="h-4 w-4 mr-2" />
                                                     Delete User
                                                 </DropdownMenuItem>

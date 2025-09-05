@@ -51,3 +51,12 @@ export const getUsers = async (roleId, userId) => {
   }
 };
 
+export const deleteUser = async (userId) => {
+  try {
+    const response = await api.post("/delete_user", { user_id: userId });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || { message: "Failed to delete user" };
+  }
+};
+
