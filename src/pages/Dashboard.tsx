@@ -221,7 +221,15 @@ const Dashboard = () => {
               {/* Profile */}
               <Avatar className="h-8 w-8">
                 <AvatarImage src="" />
-                <AvatarFallback>JD</AvatarFallback>
+                <AvatarFallback>
+                  {user.full_name
+                    ? user.full_name
+                      .split(" ")
+                      .map((n) => n[0])
+                      .join("")
+                      .toUpperCase() // Optional: uppercase initials
+                    : "JD"}
+                </AvatarFallback>
               </Avatar>
             </div>
           </div>
