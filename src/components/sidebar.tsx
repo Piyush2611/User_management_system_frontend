@@ -19,7 +19,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
     const navigate = useNavigate();
     const location = useLocation();
 
-    const [user, setUser] = useState({ full_name: "", email: "" , user_id: ""});
+    const [user, setUser] = useState({ full_name: "", email: "", user_id: "", profile_image: "" });
     const [sidebarItems, setSidebarItems] = useState([]);
     const [activeSection, setActiveSection] = useState("");
     const [open, setOpen] = useState(false);
@@ -65,6 +65,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                         full_name: res.data.full_name,
                         email: res.data.email,
                         user_id: res.data.user_id,
+                        profile_image: res.data.profile_image
                     });
                 }
             } catch (err) {
@@ -116,7 +117,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
 
                     {/* User Profile */}
                     <div className="p-4 border-t border-border">
-                        <div className="flex items-center space-x-3 mb-3">
+                        <div className="flex items-center space-x-3 mb-3 cursor-pointer" onClick={() => setOpen(true)}>
                             <Avatar className="h-8 w-8">
                                 <AvatarImage src="" />
                                 <AvatarFallback>
@@ -134,6 +135,12 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                                 <p className="text-xs text-muted-foreground">{user.email || "john@example.com"}</p>
                             </div>
                         </div>
+
+                        <UserProfileModal
+                            open={open}
+                            onClose={() => setOpen(false)}
+                            userId={user.user_id}
+                        />
                         <Button
                             variant="ghost"
                             size="sm"
@@ -161,24 +168,28 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                             <Button variant="outline" size="icon">
                                 <Bell className="h-4 w-4" />
                             </Button>
-                            <Avatar className="h-8 w-8"  onClick={() => setOpen(true)}>
-                                <AvatarImage src="" />
-                                <AvatarFallback >
-                                    {user.full_name
-                                        ? user.full_name
-                                            .split(" ")
-                                            .map((n) => n[0])
-                                            .join("")
-                                            .toUpperCase()
-                                        : "JD"}
-                                </AvatarFallback>
-                            </Avatar>
+                            <div className="cursor-pointer"
+                                onClick={() => setOpen(true)}>
+                                <Avatar className="h-8 w-8">
+                                    <AvatarImage src="" />
+                                    <AvatarFallback >
+                                        {user.full_name
+                                            ? user.full_name
+                                                .split(" ")
+                                                .map((n) => n[0])
+                                                .join("")
+                                                .toUpperCase()
+                                            : "JD"}
+                                    </AvatarFallback>
+                                </Avatar>
+
+                            </div>
                         </div>
-                          <UserProfileModal
-        open={open}
-        onClose={() => setOpen(false)}
-        userId={user.user_id}
-      />
+                        <UserProfileModal
+                            open={open}
+                            onClose={() => setOpen(false)}
+                            userId={user.user_id}
+                        />
                     </div>
                 </header>
 

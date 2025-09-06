@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { updateUserDetails,getUserProfile } from "@/api/api"; 
+import { updateUserDetails, getUserProfile } from "@/api/api";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/components/ui/use-toast";
@@ -34,59 +34,61 @@ export default function UserProfileModal({ open, onClose, userId }) {
 
   // Handle file upload
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  if (e.target.files && e.target.files[0]) {
-    const file = e.target.files[0];
-    const imageUrl = URL.createObjectURL(file);
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      const imageUrl = URL.createObjectURL(file);
 
-    setFormData((prev) => ({ ...prev, profileImage: imageUrl }));
-  }
-};
+      setFormData((prev) => ({ ...prev, profileImage: imageUrl }));
+    }
+  };
 
 
   // Save profile
   const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  setLoading(true);
+    e.preventDefault();
+    setLoading(true);
 
-  try {
-    const formDataToSend = new FormData();
-    formDataToSend.append("user_id", userId);
-    formDataToSend.append("full_name", formData.full_name);
-    formDataToSend.append("email", formData.email);
-    formDataToSend.append("phone", formData.phone);
+    try {
+      const formDataToSend = new FormData();
+      formDataToSend.append("user_id", userId);
+      formDataToSend.append("full_name", formData.full_name);
+      formDataToSend.append("email", formData.email);
+      formDataToSend.append("phone", formData.phone);
 
-    if (fileInputRef.current?.files?.[0]) {
-      formDataToSend.append("profileImage", fileInputRef.current.files[0]);
+      if (fileInputRef.current?.files?.[0]) {
+        formDataToSend.append("profileImage", fileInputRef.current.files[0]);
+      }
+
+      await updateUserDetails(formDataToSend);
+
+      const toastInstance = toast({
+        title: "Profile Updated",
+        description: "Your profile has been successfully updated.",
+        duration: 1500,
+      });
+
+      setTimeout(() => {
+        toastInstance.dismiss();
+        onClose();
+      }, 1500);
+    } catch (error: any) {
+      console.error("Update Error:", error.message);
+
+      toast({
+        title: "Update Failed",
+        description: error.message || "There was a problem updating your profile.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
     }
-
-    await updateUserDetails(formDataToSend);
-
-    const toastInstance = toast({
-      title: "Profile Updated",
-      description: "Your profile has been successfully updated.",
-      duration: 1500,
-    });
-
-    setTimeout(() => {
-      toastInstance.dismiss();
-      onClose();
-    }, 1500);
-  } catch (error: any) {
-    console.error("Update Error:", error.message);
-
-    toast({
-      title: "Update Failed",
-      description: error.message || "There was a problem updating your profile.",
-      variant: "destructive",
-    });
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
 
   return (
-    <Dialog open={open} onOpenChange={onClose}>
+    <Dialog open={open} onOpenChange={(isOpen) => {
+      if (!isOpen) onClose();
+    }}>
       <DialogContent className="sm:max-w-lg bg-white shadow-lg rounded-lg">
         <DialogHeader>
           <DialogTitle>Edit User Profile</DialogTitle>
@@ -96,7 +98,7 @@ export default function UserProfileModal({ open, onClose, userId }) {
           <p className="text-center text-gray-500">Loading...</p>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
-            
+
             {/* Profile Image Upload */}
             <div className="flex flex-col items-center">
               <div className="relative">

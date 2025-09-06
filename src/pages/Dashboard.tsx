@@ -163,19 +163,17 @@ const Dashboard = () => {
                     : "JD"}
                 </AvatarFallback>
               </Avatar>
-
-
-              <UserProfileModal
-                open={open}
-                onClose={() => setOpen(false)}
-                userId={user.user_id}
-              />
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium truncate">{user.full_name || "John Doe"}</p>
                 <p className="text-xs text-muted-foreground">{user.email || "john@example.com"}</p>
               </div>
-
             </div>
+
+            <UserProfileModal
+                open={open}
+                onClose={() => setOpen(false)}
+                userId={user.user_id}
+              />
             <Button variant="ghost" size="sm" className="w-full justify-start text-red-500 hover:text-red-600 hover:bg-red-50"
               onClick={handleLogout}
             >
