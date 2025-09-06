@@ -11,10 +11,12 @@ export default function UserProfileModal({ open, onClose, userId }) {
     full_name: "",
     email: "",
     phone: "",
-    profileImage: "",
+    profile_image: "",
   });
   const [loading, setLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  const baseImageUrl = "http://localhost:5000/uploads/";
 
   useEffect(() => {
     if (open && userId) {
@@ -38,7 +40,7 @@ export default function UserProfileModal({ open, onClose, userId }) {
       const file = e.target.files[0];
       const imageUrl = URL.createObjectURL(file);
 
-      setFormData((prev) => ({ ...prev, profileImage: imageUrl }));
+      setFormData((prev) => ({ ...prev, profile_image: imageUrl }));
     }
   };
 
@@ -103,10 +105,17 @@ export default function UserProfileModal({ open, onClose, userId }) {
             <div className="flex flex-col items-center">
               <div className="relative">
                 <img
-                  src={formData.profileImage || "https://via.placeholder.com/100"}
+                  src={
+                    formData.profile_image
+                      ? formData.profile_image.startsWith("http")
+                        ? formData.profile_image // For preview URL from `URL.createObjectURL`
+                        : `${baseImageUrl}${formData.profile_image}`
+                      : "https://via.placeholder.com/100"
+                  }
                   alt="Profile"
                   className="w-24 h-24 rounded-full object-cover border"
                 />
+
                 <button
                   type="button"
                   className="absolute bottom-0 right-0 bg-purple-600 text-white p-2 rounded-full shadow-md"
