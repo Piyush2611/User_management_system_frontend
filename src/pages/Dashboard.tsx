@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import Layout from "@/components/sidebar";
 import {
 
   ShoppingCart,
@@ -24,59 +25,22 @@ import { Input } from "@/components/ui/input";
 
 const iconMap = {
   Dashboard: Home,
-  Analytics: BarChart3,
-  Products: Package,
+  // Analytics: BarChart3,
+  // Products: Package,
   User: Users,        // note API section_name is "User", but your static label was "Customers" etc.
-  Customers: Users,   // you can map both if needed
-  Messages: MessageSquare,
-  Settings: Settings,
+  // Customers: Users,   // you can map both if needed
+  // Messages: MessageSquare,
+  // Settings: Settings,
   // Add more if you get more sections
 };
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const stats = [
-    {
-      title: "Total Users",
-      value: "2,350",
-      change: "+12%",
-      icon: Users,
-      color: "text-blue-600"
-    },
-    {
-      title: "Total Orders",
-      value: "1,234",
-      change: "+8%",
-      icon: ShoppingCart,
-      color: "text-green-600"
-    },
-    {
-      title: "Revenue",
-      value: "$45,678",
-      change: "+23%",
-      icon: DollarSign,
-      color: "text-purple-600"
-    },
-    {
-      title: "Growth",
-      value: "89.2%",
-      change: "+5%",
-      icon: TrendingUp,
-      color: "text-orange-600"
-    }
-  ];
-
   const [activeSection, setActiveSection] = useState("Dashboard");
   const [user, setUser] = useState({ full_name: "", email: "" });
 
-  const [sidebarItems, setSidebarItems] = useState([
-    { icon: Home, label: "Dashboard", active: true },
-    { icon: BarChart3, label: "Analytics", active: false },
-    { icon: Package, label: "Products", active: false },
-    { icon: Users, label: "Customers", active: false },
-    { icon: MessageSquare, label: "Messages", active: false },
-    { icon: Settings, label: "Settings", active: false },
-  ]);
+  const [sidebarItems, setSidebarItems] = useState([]);
+   const userId = localStorage.getItem("user_id");
 
 
   useEffect(() => {
@@ -105,35 +69,45 @@ const Dashboard = () => {
   }, []);
 
   useEffect(() => {
-    const fetchUserProfile = async () => {
-      try {
-        const response = await getUserProfile();
-        if (response.code === 200 && Array.isArray(response.data) && response.data.length > 0) {
-          const firstUser = response.data[0];
-          setUser({
-            full_name: firstUser.full_name || "Unknown User",
-            email: firstUser.email || "No email",
-          });
-        }
-      } catch (err) {
-        console.error("Error fetching user profile:", err);
+  const fetchUser = async () => {
+    try {
+      const userId = localStorage.getItem("user_id");
+
+      if (!userId) {
+        console.warn("No user_id found in localStorage");
+        return;
       }
-    };
 
-    fetchUserProfile();
-  }, []);
+      const res = await getUserProfile(userId);
 
-
-  const handleSidebarClick = (clickedLabel) => {
-    setActiveSection(clickedLabel);
-    setSidebarItems((items) =>
-      items.map((item) => ({
-        ...item,
-        active: item.label === clickedLabel,
-      }))
-    );
+      if (res.code === 200 && res.data) {
+        setUser({
+          full_name: res.data.full_name,
+          email: res.data.email,
+        });
+      }
+    } catch (err) {
+      console.error("Error fetching user profile", err);
+    }
   };
 
+  fetchUser();
+}, []);
+
+
+
+
+ const handleSidebarClick = (clickedLabel) => {
+  setActiveSection(clickedLabel);
+  setSidebarItems((items) =>
+    items.map((item) => ({
+      ...item,
+      active: item.label === clickedLabel,
+    }))
+  );
+
+  navigate(`/user_list`);
+};
 
 
   const handleLogout = () => {
@@ -250,7 +224,7 @@ const Dashboard = () => {
               </div>
 
               {/* Stats Cards */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+              {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                 {stats.map((stat, index) => (
                   <Card key={index}>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -265,7 +239,7 @@ const Dashboard = () => {
                     </CardContent>
                   </Card>
                 ))}
-              </div>
+              </div> */}
 
               {/* Additional Content */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

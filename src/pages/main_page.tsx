@@ -135,7 +135,7 @@ export default function MainPage() {
             Dashboard
           </NavLink>
           <NavLink
-            to="/users"
+            to="/user_list"
             className={({ isActive }) =>
               `px-4 py-2 rounded ${
                 isActive ? "bg-blue-600 text-white" : "bg-white text-gray-700"
@@ -150,7 +150,7 @@ export default function MainPage() {
           <Routes>
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
             <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/users" element={<UserTable />} />
+            <Route path="/user_list" element={<UserTable />} />
             {/* You can add more routes here */}
           </Routes>
         </main>

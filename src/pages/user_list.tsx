@@ -1,5 +1,6 @@
 import { useState, useMemo, useEffect } from "react";
-import { getUsers,deleteUser  } from "@/api/api";
+import  Layout  from "@/components/sidebar";
+import { getUsers,deleteUser ,getAllSections,getUserProfile } from "@/api/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,6 +28,18 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
+
+  ShoppingCart,
+  DollarSign,
+  Bell,
+  Settings,
+  LogOut,
+  Home,
+  BarChart3,
+  Package,
+  MessageSquare
+} from "lucide-react";
+import {
     Search,
     Filter,
     Users,
@@ -53,19 +66,55 @@ interface RawUser {
     profile_image?: string;
     // add other fields if you know them
 }
+const iconMap = {
+  Dashboard: Home,
+  // Analytics: BarChart3,
+  // Products: Package,
+  User: Users,        // note API section_name is "User", but your static label was "Customers" etc.
+  // Customers: Users,   // you can map both if needed
+  // Messages: MessageSquare,
+  // Settings: Settings,
+  // Add more if you get more sections
+};
 
 
 export function UserTable() {
     const [users, setUsers] = useState([]); // Replaces mockUsers
     const [searchQuery, setSearchQuery] = useState("");
+      const [user, setUser] = useState({ full_name: "", email: "" });
+    
     const [selectedRole, setSelectedRole] = useState("all");
     const [selectedStatus, setSelectedStatus] = useState("all");
+    const [sidebarItems, setSidebarItems] = useState([]);
     const [sortBy, setSortBy] = useState("name");
 
     const roleId = localStorage.getItem("role_id");
     const userId = localStorage.getItem("user_id");
 
+  useEffect(() => {
+    const fetchSections = async () => {
+      try {
+        const data = await getAllSections();
+        if (data.code === 200 && Array.isArray(data.data)) {
+          const items = data.data.map((section, idx) => {
+            const icon = iconMap[section.section_name] || Home;
+            const active = section.section_name === "Dashboard" || idx === 0;
 
+            return {
+              icon,
+              label: section.section_name,
+              active,
+            };
+          });
+          setSidebarItems(items);
+        }
+      } catch (err) {
+        console.error("Error fetching sidebar sections:", err);
+      }
+    };
+
+    fetchSections();
+  }, []);
     const fetchUsers = async () => {
         try {
             const response = await getUsers(roleId, userId);
@@ -95,6 +144,34 @@ export function UserTable() {
     useEffect(() => {
         fetchUsers();
     }, [roleId, userId]);
+
+    useEffect(() => {
+  const fetchUser = async () => {
+    try {
+      const userId = localStorage.getItem("user_id");
+
+      if (!userId) {
+        console.warn("No user_id found in localStorage");
+        return;
+      }
+
+      const res = await getUserProfile(userId);
+
+      if (res.code === 200 && res.data) {
+        setUser({
+          full_name: res.data.full_name,
+          email: res.data.email,
+        });
+      }
+    } catch (err) {
+      console.error("Error fetching user profile", err);
+    }
+  };
+
+  fetchUser();
+}, []);
+
+
 
      const handleDeleteUser = async (id) => {
     if (!window.confirm("Are you sure you want to delete this user?")) return;
@@ -152,6 +229,7 @@ export function UserTable() {
 
 
     return (
+        <Layout>
         <div className="min-h-screen bg-background">
             <main className="max-w-7xl mx-auto px-6 py-8">
                 {/* Filters & Controls */}
@@ -356,6 +434,7 @@ export function UserTable() {
                 )}
             </main>
         </div>
+    </Layout>
     );
 
 }
