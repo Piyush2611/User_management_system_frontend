@@ -16,7 +16,7 @@ export default function UserProfileModal({ open, onClose, userId }) {
   const [loading, setLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  const baseImageUrl = "http://localhost:5000/uploads/";
+  const baseImageUrl = "https://user-management-system-backend-gh2e.onrender.com:5000/uploads/";
 
   useEffect(() => {
     if (open && userId) {

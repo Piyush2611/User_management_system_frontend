@@ -3,7 +3,7 @@ import axios from "axios";
 
 // Set up a base Axios instance (optional but useful)
 const api = axios.create({
-  baseURL: "http://localhost:5000",
+  baseURL: "https://user-management-system-backend-gh2e.onrender.com/",
   withCredentials: true,
 });
 
