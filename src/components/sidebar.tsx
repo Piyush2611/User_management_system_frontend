@@ -20,7 +20,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
 
     const [user, setUser] = useState({ full_name: "", email: "" });
     const [sidebarItems, setSidebarItems] = useState([]);
-    const [activeSection, setActiveSection] = useState("Dashboard");
+    const [activeSection, setActiveSection] = useState("");
     const userId = localStorage.getItem("user_id");
 
     useEffect(() => {

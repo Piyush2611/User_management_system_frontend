@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useToast } from "@/components/ui/use-toast";
 import { useNavigate } from "react-router-dom";
 import { signupUser } from "@/api/api"; 
 import { Link } from "react-router-dom";
@@ -10,8 +11,11 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Camera } from "lucide-react";
 
 const Signup = () => {
+   const { toast } = useToast();
   const navigate = useNavigate();
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -40,8 +44,23 @@ const Signup = () => {
 const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
 
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  if (!emailRegex.test(formData.email)) {
+    toast({
+      title: "Invalid Email",
+      description: "Please enter a valid email address.",
+      variant: "destructive",
+    });
+    return;
+  }
+
   if (formData.password !== formData.confirmPassword) {
-    alert("Passwords do not match");
+    toast({
+      title: "Passwords do not match",
+      description: "Please ensure both password fields are identical.",
+      variant: "destructive",
+    });
     return;
   }
 
@@ -58,15 +77,32 @@ const handleSubmit = async (e: React.FormEvent) => {
   }
 
   try {
+    setLoading(true);
+
+    // ✅ Show success toast as soon as API call is initiated
+    toast({
+      title: "Link Sent Successfully",
+      description: "Check your email to verify your account.",
+      variant: "default",
+    });
+
     const result = await signupUser(form);
     console.log("Signup successful:", result);
 
     navigate("/login");
-  } catch (err) {
+  } catch (err: any) {
     console.error("Signup failed:", err);
-    alert(err.message || "Signup failed. Please try again.");
+
+    toast({
+      title: "Signup Failed",
+      description: err.message || "Something went wrong. Please try again.",
+      variant: "destructive",
+    });
+  } finally {
+    setLoading(false);
   }
 };
+
 
 
   return (
