@@ -22,6 +22,7 @@ import {
   MessageSquare
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import UserProfileModal from "@/components/UserProfileModal";
 
 const iconMap = {
   Dashboard: Home,
@@ -36,11 +37,12 @@ const iconMap = {
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const [open, setOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("Dashboard");
-  const [user, setUser] = useState({ full_name: "", email: "" });
+  const [user, setUser] = useState({ full_name: "", email: "", user_id: "", profile_image: "" });
 
   const [sidebarItems, setSidebarItems] = useState([]);
-   const userId = localStorage.getItem("user_id");
+  const userId = localStorage.getItem("user_id");
 
 
   useEffect(() => {
@@ -69,45 +71,47 @@ const Dashboard = () => {
   }, []);
 
   useEffect(() => {
-  const fetchUser = async () => {
-    try {
-      const userId = localStorage.getItem("user_id");
+    const fetchUser = async () => {
+      try {
+        const userId = localStorage.getItem("user_id");
 
-      if (!userId) {
-        console.warn("No user_id found in localStorage");
-        return;
+        if (!userId) {
+          console.warn("No user_id found in localStorage");
+          return;
+        }
+
+        const res = await getUserProfile(userId);
+
+        if (res.code === 200 && res.data) {
+          setUser({
+            full_name: res.data.full_name,
+            email: res.data.email,
+            user_id: res.data.user_id,
+            profile_image: res.data.profile_image
+          });
+        }
+      } catch (err) {
+        console.error("Error fetching user profile", err);
       }
+    };
 
-      const res = await getUserProfile(userId);
+    fetchUser();
+  }, []);
 
-      if (res.code === 200 && res.data) {
-        setUser({
-          full_name: res.data.full_name,
-          email: res.data.email,
-        });
-      }
-    } catch (err) {
-      console.error("Error fetching user profile", err);
-    }
+
+
+
+  const handleSidebarClick = (clickedLabel) => {
+    setActiveSection(clickedLabel);
+    setSidebarItems((items) =>
+      items.map((item) => ({
+        ...item,
+        active: item.label === clickedLabel,
+      }))
+    );
+
+    navigate(`/user_list`);
   };
-
-  fetchUser();
-}, []);
-
-
-
-
- const handleSidebarClick = (clickedLabel) => {
-  setActiveSection(clickedLabel);
-  setSidebarItems((items) =>
-    items.map((item) => ({
-      ...item,
-      active: item.label === clickedLabel,
-    }))
-  );
-
-  navigate(`/user_list`);
-};
 
 
   const handleLogout = () => {
@@ -142,9 +146,12 @@ const Dashboard = () => {
 
           {/* User Profile */}
           <div className="p-4 border-t border-border">
-            <div className="flex items-center space-x-3 mb-3">
+            <div className="flex items-center space-x-3 mb-3 cursor-pointer"
+              onClick={() => setOpen(true)}
+            >
+
               <Avatar className="h-8 w-8">
-                <AvatarImage src="" />
+                <AvatarImage src={user.profile_image || ""} />
                 {/* <AvatarFallback>{user.full_name ? user.full_name.split(" ").map(n => n[0]).join("") : "JD"}</AvatarFallback> */}
                 <AvatarFallback>
                   {user.full_name
@@ -156,6 +163,13 @@ const Dashboard = () => {
                     : "JD"}
                 </AvatarFallback>
               </Avatar>
+
+
+              <UserProfileModal
+                open={open}
+                onClose={() => setOpen(false)}
+                userId={user.user_id}
+              />
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium truncate">{user.full_name || "John Doe"}</p>
                 <p className="text-xs text-muted-foreground">{user.email || "john@example.com"}</p>
