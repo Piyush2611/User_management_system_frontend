@@ -8,6 +8,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
+import UserProfileModal from "./UserProfileModal";
 
 const iconMap = {
     Dashboard: Home,
@@ -18,10 +19,12 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
     const navigate = useNavigate();
     const location = useLocation();
 
-    const [user, setUser] = useState({ full_name: "", email: "" });
+    const [user, setUser] = useState({ full_name: "", email: "" , user_id: ""});
     const [sidebarItems, setSidebarItems] = useState([]);
     const [activeSection, setActiveSection] = useState("");
+    const [open, setOpen] = useState(false);
     const userId = localStorage.getItem("user_id");
+
 
     useEffect(() => {
         const fetchSections = async () => {
@@ -61,6 +64,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                     setUser({
                         full_name: res.data.full_name,
                         email: res.data.email,
+                        user_id: res.data.user_id,
                     });
                 }
             } catch (err) {
@@ -157,9 +161,9 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                             <Button variant="outline" size="icon">
                                 <Bell className="h-4 w-4" />
                             </Button>
-                            <Avatar className="h-8 w-8">
+                            <Avatar className="h-8 w-8"  onClick={() => setOpen(true)}>
                                 <AvatarImage src="" />
-                                <AvatarFallback>
+                                <AvatarFallback >
                                     {user.full_name
                                         ? user.full_name
                                             .split(" ")
@@ -170,6 +174,11 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                                 </AvatarFallback>
                             </Avatar>
                         </div>
+                          <UserProfileModal
+        open={open}
+        onClose={() => setOpen(false)}
+        userId={user.user_id}
+      />
                     </div>
                 </header>
 

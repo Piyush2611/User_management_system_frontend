@@ -72,4 +72,19 @@ export const getUserProfile = async (user_id) => {
   }
 };
 
+export const updateUserDetails = async (formData: FormData) => {
+  try {
+    const response = await api.put("/updateProfile", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return response.data;
+  } catch (error: any) {
+    throw error.response?.data || { message: "Failed to update user details" };
+  }
+};
+
+
+
 
